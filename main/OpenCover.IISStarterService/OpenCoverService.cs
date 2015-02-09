@@ -15,7 +15,7 @@ using log4net.Layout;
 
 namespace OpenCover.IISStarterService
 {
-    partial class OpenCoverService : ServiceBase
+    public partial class OpenCoverService : ServiceBase
     {
         private Thread _executionThread;
         private volatile bool _isStopping;
@@ -36,6 +36,20 @@ namespace OpenCover.IISStarterService
             var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
             root.AddAppender(appender);
 
+            var output = string.Format("log.txt", DateTime.Now);
+            // Add a file Appender
+            var fappender = new RollingFileAppender()
+            {
+                Layout = layout,
+                AppendToFile = true,
+                File = output,
+                RollingStyle = RollingFileAppender.RollingMode.Size,
+                DatePattern = "dd.MM.yyyy'.log'",
+                MaxSizeRollBackups = 5,
+                MaxFileSize = 4096
+            };
+            root.AddAppender(fappender);
+
             _logger = LogManager.GetLogger(typeof(OpenCoverService));
             #endregion
         }
@@ -52,11 +66,12 @@ namespace OpenCover.IISStarterService
             // Set the variables
             var coverageDir = Environment.GetEnvironmentVariable("CoverageDir") ?? @"C:\Coverage";
             Environment.CurrentDirectory = coverageDir;
+            _logger.InfoFormat("Current directory set to: {0}", Environment.CurrentDirectory);
 
             // Work on the execution thread
             _executionThread = new Thread(new ThreadStart(() =>
             {
-                Debugger.Launch();
+                //Debugger.Launch();
 
                 while (!_isStopping)
                 {

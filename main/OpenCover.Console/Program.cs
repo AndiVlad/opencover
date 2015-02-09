@@ -21,14 +21,14 @@ using System.Management;
 
 namespace OpenCover.Console
 {
-    class Program
+    public class Program
     {
         /// <summary>
         /// This is the initial console harness - it may become the full thing
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
 
             var returnCode = 0;
